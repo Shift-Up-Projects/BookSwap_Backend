@@ -25,7 +25,7 @@ namespace BookSwap.Data.Result
                 Value = value;
                 Message = message;
                 Errors = errors ?? new List<string>();
-                FailureType = failureType; // تعيين نوع الفشل
+                FailureType = failureType; 
             }
 
             public static Result<T> Success(T? value, string message="")
@@ -41,11 +41,11 @@ namespace BookSwap.Data.Result
         
             public static Result<T> NotFound(string message)
             {
-                return new Result<T>(false, default, message, new List<string> { message }, ResultFailureType.NotFound);
+                return new Result<T>(false, default, message, new List<string> { }, ResultFailureType.NotFound);
             }
             public static Result<T> BadRequest(string message)
             {
-                return new Result<T>(false, default, message, new List<string> { message }, ResultFailureType.BadRequest);
+                return new Result<T>(false, default, message, new List<string> { }, ResultFailureType.BadRequest);
             }
         }
 
