@@ -1,4 +1,4 @@
-﻿namespace BookSwap.Data.Result
+﻿namespace BookSwap.Core.Result
 {
     namespace BookSwap.Core.Results
     {

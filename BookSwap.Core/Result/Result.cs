@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookSwap.Data.Result
+namespace BookSwap.Core.Result
 {
 
     namespace BookSwap.Core.Results
