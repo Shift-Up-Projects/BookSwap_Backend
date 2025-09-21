@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BookSwap.Infrastructure.Configurations
+namespace BookSwap.Infrastructure.Configuration
 {
     public class UserConfigurations : IEntityTypeConfiguration<User>
     {
@@ -34,8 +34,8 @@ namespace BookSwap.Infrastructure.Configurations
                   .HasColumnType("nvarchar")
                   .HasMaxLength(400)
                   .IsRequired(true);
-             
-            builder.Property(x => x.Code)
+
+            builder.Property(x => x.ResetPasswordCode)
                    .HasColumnType("nvarchar")
                   .HasMaxLength(25)
                   .IsRequired(false);
@@ -43,5 +43,10 @@ namespace BookSwap.Infrastructure.Configurations
         }
 
     }
-    
+
 }
+
+namespace TripAgency.Infrastructure.Configurations
+{
+}
+

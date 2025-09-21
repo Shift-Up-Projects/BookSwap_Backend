@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BookSwap.Core.Results;
+using System.ComponentModel;
 using System.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -6,11 +7,11 @@ namespace BookSwap.Api.Bases
 {
     public class ApiResponse<T>
     {
-    
-        public int StatusCode { get; set; } 
+
+        public int StatusCode { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
-        public T ? Data { get; set; } 
+        public T? Data { get; set; }
         public List<string> Errors { get; set; } = new List<string>();
 
         public ApiResponse(int statusCode, bool success, string message = "", T? data = default, List<string>? errors = null)
@@ -54,5 +55,58 @@ namespace BookSwap.Api.Bases
         {
             return ErrorResponse((int)HttpStatusCode.InternalServerError, message);
         }
+       
+    }
+    public class ApiResponse
+    {
+
+        public int StatusCode { get; set; }
+        public bool Success { get; set; }
+        public object? Data { get; set; } = null;
+
+        public string Message { get; set; } = string.Empty;
+        public List<string> Errors { get; set; } = new List<string>();
+
+        public ApiResponse(int statusCode,object? Data=null, bool success=true, string message = "", List<string>? errors = null)
+        {
+            StatusCode = statusCode;
+            Success = success;
+            Message = message;
+            Errors = errors ?? new List<string>();
+        }
+
+        public static ApiResponse SuccessResponse(int statusCode,object? data=default , string message = "Operation successful.")
+        {
+            if (statusCode == (int)HttpStatusCode.NoContent)
+            {
+                return new ApiResponse(statusCode, data, true, message, null);
+            }
+            return new ApiResponse(statusCode, data, true, message, null);
+        }
+
+        public static ApiResponse ErrorResponse(int statusCode, string message = "An error occurred.", List<string>? errors = null)
+        {
+            return new ApiResponse(statusCode, default, false, message, errors);
+        }
+
+        public static ApiResponse BadRequestResponse(string message = "Bad Request.", List<string>? errors = null)
+        {
+            return ErrorResponse((int)HttpStatusCode.BadRequest, message, errors);
+        }
+
+        public static ApiResponse NotFoundResponse(string message = "Resource not found.")
+        {
+            return ErrorResponse((int)HttpStatusCode.NotFound, message);
+        }
+        public static ApiResponse ConflictResponse(string message = "Conflict.")
+        {
+            return ErrorResponse((int)HttpStatusCode.Conflict, message);
+        }
+
+        public static ApiResponse InternalServerErrorResponse(string message = "Internal Server Error.")
+        {
+            return ErrorResponse((int)HttpStatusCode.InternalServerError, message);
+        }
     }
 }
+

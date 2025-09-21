@@ -14,5 +14,15 @@ namespace BookSwap.Core.Entities.Identity
         public DateTime ExpiryDate { get; set; }   
         public int UserId { get; set; }
         public User User { get; set; }
+        public void Revoke()
+        {
+            IsRevoked = true;
+            IsUsed = true;
+        }
+
+        public bool IsActive()
+        {
+            return !IsRevoked && !IsUsed && ExpiryDate > DateTime.UtcNow;
+        }
     }
 }

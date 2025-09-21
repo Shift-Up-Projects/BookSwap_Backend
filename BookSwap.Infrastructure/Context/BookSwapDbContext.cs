@@ -21,6 +21,7 @@ namespace BookSwap.Infrastructure.Context
             
         }
         public DbSet<User> User { get; set; }
+        public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<Role> Role { get; set; } 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

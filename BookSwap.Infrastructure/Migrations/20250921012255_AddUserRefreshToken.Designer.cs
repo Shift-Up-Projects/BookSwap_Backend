@@ -4,6 +4,7 @@ using BookSwap.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookSwap.Infrastructure.Migrations
 {
     [DbContext(typeof(BookSwapDbContext))]
-    partial class BookSwapDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250921012255_AddUserRefreshToken")]
+    partial class AddUserRefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,6 +68,10 @@ namespace BookSwap.Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .HasMaxLength(200)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(25)
                         .HasColumnType("nvarchar");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -122,13 +129,6 @@ namespace BookSwap.Infrastructure.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("ResetPasswordCode")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar");
-
-                    b.Property<DateTime?>("ResetPasswordCodeExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");

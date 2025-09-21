@@ -15,11 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BookSwap.ApiService\BookSwap.ApiService.csproj" />
+    <ProjectReference Include="..\BookSwap.Application\BookSwap.Application.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,8 @@ namespace BookSwap.Core.Entities.Identity
         public string LastName { get; set; }
         public int LoyaltyPoints { get; set; } = 0;
         public string ImageUrl { get; set; }
-        public string? Code { get; set; }
+        public string? ResetPasswordCode { get; set; }
+        public DateTime? ResetPasswordCodeExpiry { get; set; }
 
         [InverseProperty(nameof(UserRefreshToken.User))]
         public virtual ICollection<UserRefreshToken>? UserRefreshTokens { get; set; }

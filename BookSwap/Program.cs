@@ -7,7 +7,6 @@ using Microsoft.OpenApi.Models;
 using BookSwap.Application;
 using Microsoft.EntityFrameworkCore;
 using BookSwap.Infrastructure.Context;
-using FluentValidation.AspNetCore;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -18,6 +17,7 @@ using BookSwap.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BookExchange.Infrastructure.Services;
 
 namespace BookSwap.Api
 {
@@ -51,7 +51,6 @@ namespace BookSwap.Api
             builder.Services.AddDbContext<BookSwapDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddServicesDependencies(builder.Configuration)
-                            .AddApiServicesDependencies(builder.Configuration)
                             .AddInfrastructureDependencies();
 
             //builder.Services.AddFluentValidationAutoValidation()
@@ -86,7 +85,7 @@ namespace BookSwap.Api
                 option.User.AllowedUserNameCharacters =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 option.User.RequireUniqueEmail = true;
-                option.SignIn.RequireConfirmedEmail = false;
+                option.SignIn.RequireConfirmedEmail = true;
 
 
             }).AddEntityFrameworkStores<BookSwapDbContext>().AddDefaultTokenProviders();
@@ -164,7 +163,7 @@ namespace BookSwap.Api
 
             //Auth Filter
             builder.Services.AddTransient<AuthFilter>();
-
+            builder.Services.AddHostedService<RefreshTokenCleanupService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

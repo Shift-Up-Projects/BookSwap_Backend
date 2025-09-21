@@ -14,6 +14,8 @@ namespace BookSwap.Application
         public static IServiceCollection AddServicesDependencies(this IServiceCollection services, IConfiguration configuration)
         {      
             services.AddTransient<ICurrentUserService, CurrentUserService>();
+            services.AddTransient<IApplicationUserService, ApplicationUserService>();
+            services.AddTransient<IAuthonticationService, AuthonticationService>();
             services.AddTransient<IMediaService, MediaService>();
             services.AddTransient<IEmailService, EmailService>();
 
