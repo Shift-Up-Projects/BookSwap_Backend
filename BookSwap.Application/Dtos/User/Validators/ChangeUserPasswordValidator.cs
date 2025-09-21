@@ -15,13 +15,15 @@ namespace BookSwap.Application.Dtos.User.Validators
                 .NotEmpty().WithMessage("Current password is required.")
                 .Length(8, 50).WithMessage("Current password must be between 8 and 50 characters.");
 
-            RuleFor(dto => dto.NewPassword)
-                .NotNull().WithMessage("New password cannot be null.")
-                .NotEmpty().WithMessage("New password is required.")
-                .Length(8, 50).WithMessage("New password must be between 8 and 50 characters.")
-                .Matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[-._@+])[a-zA-Z0-9-._@+]+$")
-                .WithMessage("New password must contain at least one uppercase letter, one number, and one special character (-._@+), and only allowed characters (a-z, A-Z, 0-9, -._@+).");
-
+            RuleFor(x => x.NewPassword)
+                 .NotNull().WithMessage("Password cannot be null.")
+                 .NotEmpty().WithMessage("Password is required")
+                 .Length(8, 100).WithMessage("Password must be between 8 and 100 characters.")
+                 .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter")
+                 .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
+                 .Matches(@"[0-9]").WithMessage("Password must contain at least one number")
+                 .Matches(@"[-._@+]").WithMessage("Password must contain at least one special character");
+          
             RuleFor(dto => dto.ConfirmPassword)
                 .NotNull().WithMessage("Confirm password cannot be null.")
                 .NotEmpty().WithMessage("Confirm password is required.")

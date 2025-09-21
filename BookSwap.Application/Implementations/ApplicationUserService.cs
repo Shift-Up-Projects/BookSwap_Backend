@@ -247,6 +247,84 @@ namespace BookSwap.Application.Implemetations
                  return Result<PaginatedResult<GetUsersDto>>.NotFound($"Not Found Users");
             return Result<PaginatedResult<GetUsersDto>>.Success(usersResult);
         }
-    }
+        public async Task<Result> BanUserAsync(int adminId, int userId)
+        {
+            var admin = await _userManager.FindByIdAsync(adminId.ToString());
+            if (admin == null || !await _userManager.IsInRoleAsync(admin, "Admin"))
+                return Result.Failure("Not authorized to ban users",failureType: ResultFailureType.Forbidden);
 
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return Result.NotFound($"User with ID {userId} not found");
+
+            if (user.IsBanned)
+                return Result.Failure("User is already banned", failureType: ResultFailureType.BadRequest);
+
+            user.IsBanned = true;
+            user.UpdatedAt = DateTime.UtcNow;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return Result.BadRequest("Failed to ban user");
+
+            await _emailService.SendEmailAsync(
+                user.Email!,
+                "Your BookSwap account has been banned",
+                "Account Banned - BookSwap");
+            return Result.Success("User banned successfully");
+        }
+
+        public async Task<Result> UnbanUserAsync(int adminId, int userId)
+        {
+            var admin = await _userManager.FindByIdAsync(adminId.ToString());
+            if (admin == null || !await _userManager.IsInRoleAsync(admin, "Admin"))
+                return Result.Failure("Not authorized to unban users", failureType: ResultFailureType.Forbidden);
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return Result.NotFound($"User with ID {userId} not found");
+
+            if (!user.IsBanned)
+                return Result.Failure("User is not banned", failureType: ResultFailureType.BadRequest);
+
+            user.IsBanned = false;
+            user.UpdatedAt = DateTime.UtcNow;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return Result.BadRequest("Failed to unban user");
+
+            await _emailService.SendEmailAsync(
+                user.Email!,
+                "Your BookSwap account has been unbanned",
+                "Account Unbanned - BookSwap");
+            return Result.Success("User unbanned successfully");
+        }
+
+        public async Task<Result> PromoteToAdminAsync(int adminId, int userId)
+        {
+            var admin = await _userManager.FindByIdAsync(adminId.ToString());
+            if (admin == null || !await _userManager.IsInRoleAsync(admin, "Admin"))
+                return Result.Failure("Not authorized to promote users", failureType: ResultFailureType.Forbidden);
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return Result.NotFound($"User with ID {userId} not found");
+
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+                return Result.Failure("User is already an admin", failureType: ResultFailureType.BadRequest);
+
+            await _userManager.AddToRoleAsync(user, "Admin");
+            user.UpdatedAt = DateTime.UtcNow;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return Result.BadRequest("Failed to promote user to admin");
+
+            await _emailService.SendEmailAsync(
+                user.Email!,
+                "You have been promoted to admin in BookSwap",
+                "Account Promoted - BookSwap");
+            return Result.Success("User promoted to admin successfully");
+        }
+
+      
+    }
 }

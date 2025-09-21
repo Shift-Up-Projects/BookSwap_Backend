@@ -1,4 +1,5 @@
-﻿using BookSwap.Application.Dtos.User.Request;
+﻿using BookSwap.Application.Dtos.Authontication.Request;
+using BookSwap.Application.Dtos.User.Request;
 using BookSwap.Application.Dtos.User.Responce;
 using BookSwap.Core.Helping;
 using BookSwap.Core.Results;
@@ -19,6 +20,9 @@ namespace BookSwap.Application.Abstracts
         public Task<Result<GetUserByIdDto>> GetUserByIdAsync(int Id);
         public Task<Result<IEnumerable<GetUsersDto>>> GetUsersAsync();
         public Task<Result<PaginatedResult<GetUsersDto>>> GetUsersPaginationAsync(string? search, int pageNumber , int pageSize );
+        Task<Result> BanUserAsync(int adminId, int userId); // Added
+        Task<Result> UnbanUserAsync(int adminId, int userId); // Added
+        Task<Result> PromoteToAdminAsync(int adminId, int userId); // Added
 
     }
 }

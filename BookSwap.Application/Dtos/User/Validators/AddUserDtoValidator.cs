@@ -1,11 +1,6 @@
 ﻿
 using BookSwap.Application.Dtos.User.Request;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookSwap.Application.Dtos.User.Validators
 {
@@ -38,12 +33,14 @@ namespace BookSwap.Application.Dtos.User.Validators
                 .NotEmpty().WithMessage("Email is required.")
                 .EmailAddress().WithMessage("Invalid email format.");
 
-            RuleFor(dto => dto.Password)
+            RuleFor(x => x.Password)
                 .NotNull().WithMessage("Password cannot be null.")
-                .NotEmpty().WithMessage("Password is required.")
+                .NotEmpty().WithMessage("Password is required")
                 .Length(8, 100).WithMessage("Password must be between 8 and 100 characters.")
-                .Matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[-._@+])[a-zA-Z0-9-._@+]+$")
-                .WithMessage("Password must contain at least one uppercase letter, one number, and one special character (-._@+), and only allowed characters (a-z, A-Z, 0-9, -._@+).");
+                .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter")
+                .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
+                .Matches(@"[0-9]").WithMessage("Password must contain at least one number")
+                .Matches(@"[-._@+]").WithMessage("Password must contain at least one special character");
         }
     }
 }

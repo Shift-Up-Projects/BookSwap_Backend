@@ -32,7 +32,7 @@ namespace BookSwap.Application.Dtos.User.Validators
 
             RuleFor(dto => dto.PhoneNumber)
                 .NotEmpty().When(dto => dto.PhoneNumber != null).WithMessage("Phone number cannot be empty if provided.")
-                .Length(7, 15).When(dto => dto.PhoneNumber != null).WithMessage("Phone number must be between 7 and 15 characters.")
+                .Length(7, 20).When(dto => dto.PhoneNumber != null).WithMessage("Phone number must be between 7 and 20 characters.")
                 .Matches(@"^\+?[0-9\-]+$").When(dto => dto.PhoneNumber != null).WithMessage("Phone number can only contain numbers, '+', or '-'.");
 
             RuleFor(dto => dto.Address)

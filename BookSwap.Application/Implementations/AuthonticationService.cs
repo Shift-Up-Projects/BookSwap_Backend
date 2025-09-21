@@ -56,6 +56,9 @@ namespace BookSwap.Application.Implemetations
 
             if (user is null)
                 return Result<SignInResponse>.Failure($"Not Found User By Email Or Password Not Correct : {signInDto.Email} ", failureType: ResultFailureType.Unauthorized);
+            
+            if (user.IsBanned)
+                return Result<SignInResponse>.Failure("User is banned",failureType: ResultFailureType.Forbidden);
 
             if (!user.EmailConfirmed)
                 return Result<SignInResponse>.BadRequest("Email Not Confirm");

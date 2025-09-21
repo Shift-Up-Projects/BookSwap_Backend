@@ -31,22 +31,42 @@ namespace BookSwap.Infrastructure.Configuration
                    .IsRequired(false);
 
             builder.Property(x => x.ImageUrl)
-                  .HasColumnType("nvarchar")
-                  .HasMaxLength(400)
-                  .IsRequired(true);
+                    .HasColumnType("nvarchar")
+                    .HasMaxLength(400)
+                    .IsRequired(false)
+                    .HasDefaultValue("/User/UserDefaultImage.jpg");
 
             builder.Property(x => x.ResetPasswordCode)
                    .HasColumnType("nvarchar")
                   .HasMaxLength(25)
                   .IsRequired(false);
 
+            builder.Property(x => x.ResetPasswordCodeExpiry)
+                   .HasColumnType("datetime2")
+                   .IsRequired(false);
+
+            builder.Property(x => x.LoyaltyPoints)
+                 .HasColumnType("int")
+                 .IsRequired()
+                 .HasDefaultValue(0);
+
+            builder.Property(x => x.IsBanned)
+                   .HasColumnType("bit")
+                   .IsRequired()
+                   .HasDefaultValue(false);
+
+            builder.Property(x => x.CreatedAt)
+                   .HasColumnType("datetime2")
+                   .IsRequired();
+                  
+
+            builder.Property(x => x.UpdatedAt)
+                   .HasColumnType("datetime2")
+                   .IsRequired(false); 
         }
 
     }
 
 }
 
-namespace TripAgency.Infrastructure.Configurations
-{
-}
 

@@ -14,8 +14,10 @@ namespace BookSwap.Core.Entities.Identity
         public string ImageUrl { get; set; }
         public string? ResetPasswordCode { get; set; }
         public DateTime? ResetPasswordCodeExpiry { get; set; }
-
+        public bool IsBanned { get; set; } = false;  
+        public DateTime CreatedAt { get; set; } = DateTime.Now;  
+        public DateTime? UpdatedAt { get; set; }  
         [InverseProperty(nameof(UserRefreshToken.User))]
-        public virtual ICollection<UserRefreshToken>? UserRefreshTokens { get; set; }
+        public virtual ICollection<UserRefreshToken>? UserRefreshTokens { get; set; }       
     }
 }
