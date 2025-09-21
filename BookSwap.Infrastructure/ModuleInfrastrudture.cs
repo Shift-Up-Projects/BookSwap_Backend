@@ -11,6 +11,7 @@ namespace BookSwap.Infrastructure
         {
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IRefreshTokenRepositoryAsync, RefreshTokenRepositoryAsync>();
+            services.AddTransient<IBookRepositoryAsync, BookRepositoryAsync>();
 
             return services;
         }

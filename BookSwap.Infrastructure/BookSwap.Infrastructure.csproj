@@ -20,8 +20,4 @@
     <ProjectReference Include="..\BookSwap.Core\BookSwap.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Abstracts\" />
-  </ItemGroup>
-
 </Project>

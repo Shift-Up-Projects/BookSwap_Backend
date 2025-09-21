@@ -18,6 +18,9 @@ namespace BookSwap.Core.Entities.Identity
         public DateTime CreatedAt { get; set; } = DateTime.Now;  
         public DateTime? UpdatedAt { get; set; }  
         [InverseProperty(nameof(UserRefreshToken.User))]
-        public virtual ICollection<UserRefreshToken>? UserRefreshTokens { get; set; }       
+        public virtual ICollection<UserRefreshToken>? UserRefreshTokens { get; set; }      
+        public virtual ICollection<Book>? Books { get; set; }
+
+
     }
 }

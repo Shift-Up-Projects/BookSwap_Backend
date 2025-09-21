@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using BookSwap.Core.Entities.Identity;
+using BookSwap.Core.Entities;
 
 namespace BookSwap.Infrastructure.Context
 {
@@ -23,6 +24,7 @@ namespace BookSwap.Infrastructure.Context
         public DbSet<User> User { get; set; }
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<Role> Role { get; set; } 
+        public DbSet<Book> Books { get; set; } 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
