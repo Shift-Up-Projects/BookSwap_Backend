@@ -25,7 +25,7 @@ namespace BookSwap.Api.Controllers
         [HttpPost]
         public async Task<ApiResult> AddNewUser(AddUserDto userDto)
         {
-            var AddNewUserResult = await _applicationUserService.Registersync(userDto);
+            var AddNewUserResult = await _applicationUserService.RegisterAsync(userDto);
             if (!AddNewUserResult.IsSuccess)
             {
                 return this.ToApiResult(AddNewUserResult);

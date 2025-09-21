@@ -178,7 +178,7 @@ namespace BookSwap.Application.Implemetations
         }
         public async Task<Result> ResetPasswordAsync(Dtos.Authontication.Request.ResetPasswordRequest request)
         {
-            var trans = await _dBContext.Database.BeginTransactionAsync();
+            using var trans = await _dBContext.Database.BeginTransactionAsync();
             try
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
@@ -187,17 +187,19 @@ namespace BookSwap.Application.Implemetations
                 if (user.ResetPasswordCode != request.Code ||
                     user.ResetPasswordCodeExpiry < DateTime.Now)
                 {
+                    await trans.RollbackAsync();
                     return Result.Failure("Invalid or expired reset code");
                 }
                 var RemovePasswordResult = await _userManager.RemovePasswordAsync(user);
                 if (!RemovePasswordResult.Succeeded)
                 {
+                    await trans.RollbackAsync();
                     return Result.BadRequest(string.Join(", ", RemovePasswordResult.Errors.Select(e => e.Description)));
                 }
                 if (await _userManager.HasPasswordAsync(user))
                 {
                     await  trans.RollbackAsync();
-                    return Result.BadRequest("TODO");
+                    return Result.BadRequest("Failed Remove Password");
                 }
                 var AddNewPasswordresult = await _userManager.AddPasswordAsync(user, request.NewPassword);
                 if (!AddNewPasswordresult.Succeeded)

@@ -53,7 +53,7 @@ namespace BookSwap.Application.Implemetations
         public IEmailService _emailService { get; }
         public ICurrentUserService _currentUserService { get; }
 
-        public async Task<Result> Registersync(AddUserDto userDtos)
+        public async Task<Result> RegisterAsync(AddUserDto userDtos)
         {
             var user = new User
             {
@@ -74,9 +74,9 @@ namespace BookSwap.Application.Implemetations
                     return Result.BadRequest("Email is Exist");
 
 
-                //if User is Exist
-                var existUserName = await _userManager.FindByEmailAsync(user.Email);
-                //email is Exist
+                //if User Name is Exist
+                var existUserName = await _userManager.FindByNameAsync(user.UserName);
+                // User Name is Exist
                 if (existUserName != null)
                     return Result.BadRequest("UserName is Exist");
 
@@ -225,8 +225,8 @@ namespace BookSwap.Application.Implemetations
 
         public async Task<Result<PaginatedResult<GetUsersDto>>> GetUsersPaginationAsync(string? search, int pageNumber, int pageSize )
         {
-            var query = _userManager.Users;
-            if(search is not null)
+            var query = _userManager.Users.AsNoTracking();
+            if(!string.IsNullOrEmpty(search))
                 query = query.ApplySearch(search,new[]{ "UserName","Email"});
          
             var usersResult = await query.Select(user => new GetUsersDto()

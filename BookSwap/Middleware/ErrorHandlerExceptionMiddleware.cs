@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using BookSwap.Api.Bases;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookSwap.Middleware
 {
@@ -72,8 +73,15 @@ namespace BookSwap.Middleware
                 //logger.LogError(dbUpdateEx, "DbUpdateException occurred."); // سجل تفاصيل DbUpdateException
 
                 errors.Add("Database update failed.");
+
             }
-   
+            else if (exception is SecurityTokenException)
+            {
+                statusCode = (int)HttpStatusCode.Unauthorized;
+                message = "Invalid Token";
+                errors.Add(exception.Message);
+            }
+
             else
             {
                 statusCode = (int)HttpStatusCode.InternalServerError;

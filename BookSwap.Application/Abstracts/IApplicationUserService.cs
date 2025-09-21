@@ -12,7 +12,7 @@ namespace BookSwap.Application.Abstracts
 {
     public interface IApplicationUserService
     {
-        public Task<Result> Registersync(AddUserDto userDtos);
+        public Task<Result> RegisterAsync(AddUserDto userDtos);
         public Task<Result> UpdateUserAsync(UpdateUserDto userDtos);
         public Task<Result> DeleteUserAsync(int Id);
         public Task<Result<string>> ChangePasswordAsync(ChangeUserPassword changeUserPassword);
