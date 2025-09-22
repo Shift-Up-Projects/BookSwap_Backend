@@ -32,7 +32,7 @@
 
         public int TotalCount { get; set; }
 
-        public object Meta { get; set; }
+        public object? Meta { get; set; }
 
         public int PageSize { get; set; }
 

@@ -15,8 +15,9 @@ namespace BookSwap.Infrastructure.Repositories
         public async Task<IEnumerable<Book>> GetPendingApprovalBooksAsync()
         {
             return await GetTableNoTracking()
-                .Where(b => !b.IsApproved)
+                .Where(b => !b.IsApproved && string.IsNullOrEmpty(b.RejectionReason))
                 .Include(b => b.Owner)
+                .Include(b => b.Category)
                 .ToListAsync();
         }
 
@@ -25,6 +26,7 @@ namespace BookSwap.Infrastructure.Repositories
             return await GetTableNoTracking()
                 .Where(b => b.IsApproved && b.IsAvailable)
                 .Include(b => b.Owner)
+                .Include(b => b.Category)
                 .ToListAsync();
         }
 
@@ -33,6 +35,7 @@ namespace BookSwap.Infrastructure.Repositories
             return await GetTableNoTracking()
                 .Where(b => b.OwnerId == ownerId)
                 .Include(b => b.Owner)
+                .Include(b => b.Category)
                 .ToListAsync();
         }
 
@@ -47,6 +50,24 @@ namespace BookSwap.Infrastructure.Repositories
                              b.Author.Contains(searchTerm) ||
                              b.ISBN == null ? false : b.ISBN.Contains(searchTerm)))
                 .Include(b => b.Owner)
+                .Include(b => b.Category)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Book>> GetRejectedBooksAsync()
+        {
+            return await GetTableNoTracking()
+                .Where(b => !b.IsApproved && !string.IsNullOrEmpty(b.RejectionReason))
+                .Include(b => b.Owner)
+                .Include(b => b.Category)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Book>> GetRejectedBooksByOwnerAsync(int ownerId)
+        {
+            return await GetTableNoTracking()
+                .Where(b => b.OwnerId == ownerId && !b.IsApproved && !string.IsNullOrEmpty(b.RejectionReason))
+                .Include(b => b.Owner)
+                .Include(b => b.Category)
                 .ToListAsync();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using BookSwap.Core.Entities.Identity;
+using BookSwap.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,13 +17,22 @@ namespace BookSwap.Core.Entities
         public string? ISBN { get; set; }
         public string? Description { get; set; }
         public string CoverImageUrl { get; set; }
-        public string Condition { get; set; } = string.Empty; // e.g., New, Used, Damaged
+        public BookCondition Condition { get; set; }
+        public BookStatus Status { get; set; }
         public bool IsAvailable { get; set; } = true;
         public int OwnerId { get; set; }
         public bool IsApproved { get; set; } = false;
+        public string RejectionReason { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
         [ForeignKey(nameof(OwnerId))]
-        public virtual User Owner { get; set; } = null!; }
+        public virtual User Owner { get; set; } = null!;
+
+        public IEnumerable<OfferedBook> OfferedBooks { get; set; } = new List<OfferedBook>();
+        public IEnumerable<ExchangeOffer> ExchangeOffers { get; set; } = new List<ExchangeOffer>();
+
+    }
 }

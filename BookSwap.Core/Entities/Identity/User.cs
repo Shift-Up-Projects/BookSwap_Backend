@@ -21,6 +21,11 @@ namespace BookSwap.Core.Entities.Identity
         public virtual ICollection<UserRefreshToken>? UserRefreshTokens { get; set; }      
         public virtual ICollection<Book>? Books { get; set; }
 
+        public ICollection<Book> OwnedBooks { get; set; }
+        [InverseProperty(nameof(ExchangeOffer.Sender))]
+        public ICollection<ExchangeOffer> SentOffers { get; set; } =new List<ExchangeOffer>();
+        [InverseProperty(nameof(ExchangeOffer.Receiver))]
+        public ICollection<ExchangeOffer> ReceivedOffers { get; set; } = new List<ExchangeOffer>();
 
     }
 }

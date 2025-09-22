@@ -7,6 +7,7 @@ using BookSwap.Application.Abstracts;
 using BookSwapImplementations;
 using BookSwap.Application.Implementations;
 using BookSwap.Application.Implemetations;
+using BookExchange.Infrastructure.Services;
 namespace BookSwap.Application
 {
     public static class ModuleApiServicesDependencies
@@ -18,7 +19,10 @@ namespace BookSwap.Application
             services.AddTransient<IAuthonticationService, AuthonticationService>();
             services.AddTransient<IMediaService, MediaService>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IBookService, BookService>();
 
+            //BackgroundServices
+            services.AddHostedService<RefreshTokenCleanupService>();
 
             //Email Setting
             var emailSettings = new EmailSettings();

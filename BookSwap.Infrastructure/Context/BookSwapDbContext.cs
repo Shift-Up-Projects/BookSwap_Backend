@@ -24,7 +24,11 @@ namespace BookSwap.Infrastructure.Context
         public DbSet<User> User { get; set; }
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<Role> Role { get; set; } 
-        public DbSet<Book> Books { get; set; } 
+        public DbSet<Book> Books { get; set; }
+        public DbSet<ExchangeOffer> ExchangeOffers { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<OfferedBook> OfferedBooks { get; set; }
+        public DbSet<BookOwnershipHistory> BookOwnershipHistory { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

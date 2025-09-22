@@ -1,151 +1,155 @@
 
-using BookSwap.Api.Behavior;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using BookSwap.Api.Filter;
 using BookSwap.Application;
-using Microsoft.EntityFrameworkCore;
-using BookSwap.Infrastructure.Context;
+using BookSwap.Application.Dtos.User.Validators;
+using FluentValidation.AspNetCore;
 using FluentValidation;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
 using BookSwap.Core.Entities.Identity;
 using BookSwap.Infrastructure;
+using BookSwap.Infrastructure.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
 using System.Text;
-using BookExchange.Infrastructure.Services;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using BookSwap.Middleware;
 
 namespace BookSwap.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
-
-            builder.Services.AddControllers(op => op.Filters.Add(typeof(ValidationFilter)))
-                  .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context => null!)
-                  .AddJsonOptions(options =>
-                  {
-                      options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                      options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-                  });
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options =>
+            try
             {
-                options.MapType<TimeSpan>(() => new OpenApiSchema
+                var builder = WebApplication.CreateBuilder(args);
+
+                // Add services to the container.
+
+                builder.Services.AddControllers(op => op.Filters.Add(typeof(ValidationFilter)))
+                      .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context => null!)
+                      .AddJsonOptions(options =>
+                      {
+                          options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                          options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+                      });
+                // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+                builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddSwaggerGen(options =>
                 {
-                    Type = "string",
-                    Example = new OpenApiString("00:00:00")
-                });
-            });
-
-            builder.Services.AddDbContext<BookSwapDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            builder.Services.AddServicesDependencies(builder.Configuration)
-                            .AddInfrastructureDependencies();
-
-            //builder.Services.AddFluentValidationAutoValidation()
-            //                    .AddValidatorsFromAssembly();
-
-            builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            builder.Services.AddTransient<IUrlHelper>(x =>
-            {
-                var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
-                var factory = x.GetRequiredService<IUrlHelperFactory>();
-                return factory.GetUrlHelper(actionContext!);
-            });
-
-            #region addIdentity
-
-            builder.Services.AddIdentity<User, Role>(option =>
-            {
-                // Password settings.
-                option.Password.RequireDigit = true;
-                option.Password.RequireLowercase = true;
-                option.Password.RequireNonAlphanumeric = true;
-                option.Password.RequireUppercase = true;
-                option.Password.RequiredLength = 6;
-                option.Password.RequiredUniqueChars = 1;
-
-                // Lockout settings.
-                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                option.Lockout.MaxFailedAccessAttempts = 5;
-                option.Lockout.AllowedForNewUsers = true;
-
-                // User settings.
-                option.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                option.User.RequireUniqueEmail = true;
-                option.SignIn.RequireConfirmedEmail = true;
-
-
-            }).AddEntityFrameworkStores<BookSwapDbContext>().AddDefaultTokenProviders();
-            #endregion
-            #region Authontication
-            builder.Services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = Boolean.Parse(builder.Configuration["jwtSettings:ValidateIssuer"]!),
-                    ValidIssuers = new[] { builder.Configuration["jwtSettings:Issuer"] },
-                    ValidateIssuerSigningKey = Boolean.Parse(builder.Configuration["jwtSettings:ValidateIssuerSigningKey"]!),
-
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwtSettings:Secret"]!)),
-                    ValidAudience = builder.Configuration["jwtSettings:Audience"],
-                    ValidateAudience = Boolean.Parse(builder.Configuration["jwtSettings:ValidateAudience"]!),
-                    ValidateLifetime = Boolean.Parse(builder.Configuration["jwtSettings:ValidateLifeTime"]!),
-                };
-            });
-
-            #endregion
-            #region CORS
-            var allowReactApp = "AllowReactApp";
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(allowReactApp,
-                    policy =>
+                    options.MapType<TimeSpan>(() => new OpenApiSchema
                     {
-                        policy.AllowAnyOrigin() 
-                              .AllowAnyHeader()
-                              .AllowAnyMethod();
-                       
+                        Type = "string",
+                        Example = new OpenApiString("00:00:00")
                     });
-            });
-            #endregion
-            #region Swagger Gn
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Book Swab", Version = "v1" });
-                // c.EnableAnnotations();
-
-                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                builder.Services.AddDbContext<BookSwapDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+                builder.Services.AddServicesDependencies(builder.Configuration)
+                                .AddInfrastructureDependencies();
+
+                builder.Services.AddFluentValidationAutoValidation()
+                                    .AddValidatorsFromAssembly(typeof(AddUserDtoValidator).Assembly);
+
+                builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+                builder.Services.AddTransient<IUrlHelper>(x =>
+                {
+                    var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+                    var factory = x.GetRequiredService<IUrlHelperFactory>();
+                    return factory.GetUrlHelper(actionContext!);
+                });
+
+                #region addIdentity
+
+                builder.Services.AddIdentity<User, Role>(option =>
+                {
+                    // Password settings.
+                    option.Password.RequireDigit = true;
+                    option.Password.RequireLowercase = true;
+                    option.Password.RequireNonAlphanumeric = true;
+                    option.Password.RequireUppercase = true;
+                    option.Password.RequiredLength = 6;
+                    option.Password.RequiredUniqueChars = 1;
+
+                    // Lockout settings.
+                    option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                    option.Lockout.MaxFailedAccessAttempts = 5;
+                    option.Lockout.AllowedForNewUsers = true;
+
+                    // User settings.
+                    option.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                    option.User.RequireUniqueEmail = true;
+                    option.SignIn.RequireConfirmedEmail = true;
+
+
+                }).AddEntityFrameworkStores<BookSwapDbContext>().AddDefaultTokenProviders();
+                #endregion
+                #region Authontication
+                builder.Services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
                     {
+                        ValidateIssuer = Boolean.Parse(builder.Configuration["jwtSettings:ValidateIssuer"]!),
+                        ValidIssuers = new[] { builder.Configuration["jwtSettings:Issuer"] },
+                        ValidateIssuerSigningKey = Boolean.Parse(builder.Configuration["jwtSettings:ValidateIssuerSigningKey"]!),
+
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwtSettings:Secret"]!)),
+                        ValidAudience = builder.Configuration["jwtSettings:Audience"],
+                        ValidateAudience = Boolean.Parse(builder.Configuration["jwtSettings:ValidateAudience"]!),
+                        ValidateLifetime = Boolean.Parse(builder.Configuration["jwtSettings:ValidateLifeTime"]!),
+                    };
+                });
+
+                #endregion
+                #region CORS
+                var allowReactApp = "AllowReactApp";
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy(allowReactApp,
+                        policy =>
+                        {
+                            policy.AllowAnyOrigin()
+                                  .AllowAnyHeader()
+                                  .AllowAnyMethod();
+
+                        });
+                });
+                #endregion
+                #region Swagger Gn
+                builder.Services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Book Swab", Version = "v1" });
+                    // c.EnableAnnotations();
+
+                    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                    {
+                        Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Scheme = JwtBearerDefaults.AuthenticationScheme
+                    });
+
+                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                        {
                         {
                             new OpenApiSecurityScheme
                             {
@@ -157,30 +161,57 @@ namespace BookSwap.Api
                             },
                             Array.Empty<string>()
                         }
-                    });
-            });
-            #endregion
+                        });
+                });
+                #endregion
 
-            //Auth Filter
-            builder.Services.AddTransient<AuthFilter>();
-            builder.Services.AddHostedService<RefreshTokenCleanupService>();
-            var app = builder.Build();
+                //Auth Filter
+                builder.Services.AddTransient<AuthFilter>();
+                var app = builder.Build();
+                app.UseMiddleware<ErrorHandlerExceptionMiddleware>();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                // Configure the HTTP request pipeline.
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
+                #region Update-Database
+
+                using var Scope = app.Services.CreateScope();
+                var Services = Scope.ServiceProvider;
+                var LoggerFactory = Services.GetRequiredService<ILoggerFactory>();
+
+                try
+                {
+                    var DbContext = Services.GetRequiredService<BookSwapDbContext>();
+                    await DbContext.Database.MigrateAsync();
+                }
+                catch (Exception ex)
+                {
+                    var Logger = LoggerFactory.CreateLogger<Program>();
+                    Logger.LogError(ex, "Error! Database Not Updated");
+                }
+
+                #endregion
+
+                app.UseStaticFiles();
+                app.UseHttpsRedirection();
+                app.UseCors(allowReactApp);
+                app.UseAuthentication();
+                app.UseAuthorization();
+
+
+                app.MapControllers();
+
+                app.Run();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
+

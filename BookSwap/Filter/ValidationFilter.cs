@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using BookSwap.Api.Bases;
 
-namespace BookSwap.Api.Behavior
+namespace BookSwap.Api.Filter
 {
 
     public class ValidationFilter : IAsyncActionFilter

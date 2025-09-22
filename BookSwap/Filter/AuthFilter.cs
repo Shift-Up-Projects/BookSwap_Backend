@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BookSwap.Application.Abstracts;
 
-namespace BookSwap.Api.Behavior
+namespace BookSwap.Api.Filter
 {
     public class AuthFilter : IAsyncActionFilter
     {

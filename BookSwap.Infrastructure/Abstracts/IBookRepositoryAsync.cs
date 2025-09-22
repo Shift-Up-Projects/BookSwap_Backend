@@ -9,5 +9,7 @@ namespace BookSwap.Infrastructure.Abstracts
         Task<IEnumerable<Book>> GetApprovedBooksAsync();
         Task<IEnumerable<Book>> GetBooksByOwnerAsync(int ownerId);
         Task<IEnumerable<Book>> SearchBooksAsync(string? searchTerm);
+        Task<IEnumerable<Book>> GetRejectedBooksAsync(); // للإدارة
+        Task<IEnumerable<Book>> GetRejectedBooksByOwnerAsync(int ownerId); // للمستخدم
     }
 }

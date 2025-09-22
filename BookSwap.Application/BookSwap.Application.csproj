@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.0" />
@@ -25,7 +27,9 @@
 
   <ItemGroup>
     <Folder Include="Dtos\Authontication\Shared\" />
-    <Folder Include="Dtos\Book\" />
+    <Folder Include="Dtos\Offer\Request\" />
+    <Folder Include="Dtos\Offer\Response\" />
+    <Folder Include="Dtos\Offer\Validators\" />
     <Folder Include="Dtos\User\Shared\" />
   </ItemGroup>
 
