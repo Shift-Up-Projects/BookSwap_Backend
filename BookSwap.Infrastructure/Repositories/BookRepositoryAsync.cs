@@ -70,5 +70,12 @@ namespace BookSwap.Infrastructure.Repositories
                 .Include(b => b.Category)
                 .ToListAsync();
         }
+        public async Task<List<Book>> GetBooksByIdsAsync(IEnumerable<int> bookIds)
+        {
+            return await GetTableNoTracking()
+                .Where(b => bookIds.Contains(b.Id))
+                
+                .ToListAsync();
+        }
     }
 }

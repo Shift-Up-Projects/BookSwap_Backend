@@ -1,0 +1,53 @@
+[33mcommit ea06aba5d3ba1c42a31020291ff985f86e462ad8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Moner <monernashed3@gmail.com>
+Date:   Mon Sep 22 13:47:52 2025 +0600
+
+    ADD ExchangeOfffer and OfferedBook and Category , BookOwnerShipHistory
+    add Enums
+    Add Category and ExchangeOffer Repository
+    Edit Book entity
+    Add DTOs, FluentValidation, Service, and Controller for book entity
+
+M	.gitignore
+A	BookSwap.Application/Abstracts/IBookService.cs
+M	BookSwap.Application/BookSwap.Application.csproj
+A	BookSwap.Application/Dtos/Book/Request/ApproveBookRequest.cs
+A	BookSwap.Application/Dtos/Book/Request/CreateBookRequest.cs
+A	BookSwap.Application/Dtos/Book/Request/UpdateBookRequest.cs
+A	BookSwap.Application/Dtos/Book/Response/BookResponse.cs
+A	BookSwap.Application/Dtos/Book/Validators/ApproveBookRequestValidator.cs
+A	BookSwap.Application/Dtos/Book/Validators/CreateBookRequestValidator.cs
+A	BookSwap.Application/Dtos/Book/Validators/UpdateBookRequestValidator.cs
+A	BookSwap.Application/Implementations/BookService.cs
+M	BookSwap.Application/ModuleServicesDependencies.cs
+M	BookSwap.Core/BookSwap.Core.csproj
+M	BookSwap.Core/Entities/Book.cs
+A	BookSwap.Core/Entities/BookOwnershipHistory.cs
+A	BookSwap.Core/Entities/Category.cs
+A	BookSwap.Core/Entities/ExchangeOffer.cs
+M	BookSwap.Core/Entities/Identity/User.cs
+A	BookSwap.Core/Entities/OfferedBook.cs
+A	BookSwap.Core/Enums/BookCondition.cs
+A	BookSwap.Core/Enums/BookStatus.cs
+A	BookSwap.Core/Enums/ExchangeOfferStatus.cs
+M	BookSwap.Core/Helping/PaginatedResult.cs
+M	BookSwap.Core/Helping/UserClaimModel.cs
+M	BookSwap.Infrastructure/Abstracts/IBookRepositoryAsync.cs
+A	BookSwap.Infrastructure/Abstracts/ICategoryRepositoryAsync.cs
+A	BookSwap.Infrastructure/Abstracts/IExchangeOfferRepositoryAsync.cs
+M	BookSwap.Infrastructure/Configuration/BookConfigurations.cs
+A	BookSwap.Infrastructure/Configuration/BookOwnershipHistoryConfigurations.cs
+A	BookSwap.Infrastructure/Configuration/ExchangeOfferConfigurations.cs
+A	BookSwap.Infrastructure/Configuration/OfferedBookConfigurations.cs
+M	BookSwap.Infrastructure/Context/BookSwapDbContext.cs
+A	BookSwap.Infrastructure/Migrations/20250922063914_AddExchangeOfferAndCategoryandOfferedBookAndBookOwnershipHistory.Designer.cs
+A	BookSwap.Infrastructure/Migrations/20250922063914_AddExchangeOfferAndCategoryandOfferedBookAndBookOwnershipHistory.cs
+M	BookSwap.Infrastructure/Migrations/BookSwapDbContextModelSnapshot.cs
+M	BookSwap.Infrastructure/ModuleInfrastrudture.cs
+M	BookSwap.Infrastructure/Repositories/BookRepositoryAsync.cs
+A	BookSwap.Infrastructure/Repositories/CategoryRepositoryAsync.cs
+A	BookSwap.Infrastructure/Repositories/ExchangeOfferRepositoryAsync.cs
+A	BookSwap/Controllers/BookController.cs
+M	BookSwap/Filter/AuthFilter.cs
+M	BookSwap/Filter/ValidationFilter.cs
+M	BookSwap/Program.cs

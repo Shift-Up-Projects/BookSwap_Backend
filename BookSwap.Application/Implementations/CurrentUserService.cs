@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using BookSwap.Core.Helping;
 using BookSwap.Core.Entities.Identity;
+using Microsoft.EntityFrameworkCore;
 namespace BookSwapImplementations
 {
     public class CurrentUserService : ICurrentUserService
@@ -35,7 +36,7 @@ namespace BookSwapImplementations
         public async Task<User> GetUserAsync()
         {
             var userId = GetUserId();
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
             { throw new UnauthorizedAccessException(); }
             return user;

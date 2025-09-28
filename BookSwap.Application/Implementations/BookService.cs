@@ -25,6 +25,9 @@ namespace BookSwap.Application.Implementations
         private readonly IExchangeOfferRepositoryAsync _exchangeOfferRepository;
         private readonly UserManager<User> _userManager;
         private readonly IMediaService _mediaService;
+        private readonly IBookService _bookService;
+
+        private readonly IOfferedBookRepositoryAsync _offeredBookRepositoryAsync;
         public ICategoryRepositoryAsync _categoryRepository { get; }
         public ICurrentUserService _currentUserService { get; }
 
@@ -35,7 +38,9 @@ namespace BookSwap.Application.Implementations
             UserManager<User> userManager,
             IHttpContextAccessor httpContextAccessor,
             IMediaService mediaService,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            IOfferedBookRepositoryAsync offeredBookRepositoryAsync
+            )
         {
             _bookRepository = bookRepository;
             _categoryRepository = categoryRepository;
@@ -43,6 +48,8 @@ namespace BookSwap.Application.Implementations
             _userManager = userManager;
             _mediaService = mediaService;
             _currentUserService = currentUserService;
+            _offeredBookRepositoryAsync = offeredBookRepositoryAsync;
+            
         }
 
         public async Task<Result<BookResponse>> CreateBookAsync(CreateBookRequest request)
@@ -65,7 +72,7 @@ namespace BookSwap.Application.Implementations
                 OwnerId = user.Id,
                 Condition = request.Condition,
                 CategoryId = request.CategoryId,
-                Status = request.BookStatus ,// Available أو Personal
+                Status = request.BookStatus,// Available أو Personal
                 RejectionReason = string.Empty
             };
 
@@ -101,7 +108,7 @@ namespace BookSwap.Application.Implementations
             var category = await _categoryRepository.GetCategoryByIdAsync(request.CategoryId);
             if (category is null)
                 return Result<BookResponse>.NotFound("Not Found Category With Id");
-            
+
             if (book.Status == BookStatus.PendingExchange || book.Status == BookStatus.Removed)
                 return Result<BookResponse>.BadRequest($"Cannot update book as it has been {book.Status.ToString()}");
 
@@ -129,7 +136,7 @@ namespace BookSwap.Application.Implementations
             book.IsAvailable = request.BookStatus == BookStatus.Available;
             book.Condition = request.Condition;
             book.Status = request.BookStatus;
-           
+
 
             await _bookRepository.UpdateAsync(book);
 
@@ -151,7 +158,7 @@ namespace BookSwap.Application.Implementations
                 Status = book.Status,
                 RejectionReason = book.RejectionReason
             }, "Book updated successfully, awaiting admin approval");
-        }    
+        }
         public async Task<Result> DeleteBookAsync(int bookId)
         {
             var book = await _bookRepository.GetByIdAsync(bookId);
@@ -277,7 +284,7 @@ namespace BookSwap.Application.Implementations
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
                     Status = b.Status,
-                    RejectionReason= b.RejectionReason
+                    RejectionReason = b.RejectionReason
                 });
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
@@ -285,7 +292,7 @@ namespace BookSwap.Application.Implementations
         {
             var books = await _bookRepository.SearchBooksAsync(searchTerm);
             var result = books
-                .Where(b => b.Status == BookStatus.Available && b.IsAvailable &&  b.IsApproved)
+                .Where(b => b.Status == BookStatus.Available && b.IsAvailable && b.IsApproved)
                 .Select(b => new BookResponse
                 {
                     Id = b.Id,
@@ -383,5 +390,46 @@ namespace BookSwap.Application.Implementations
                    request.ISBN != book.ISBN ||
                    request.Image != null;
         }
+
+        public async Task<Result<IEnumerable<BookResponse>>> GetOfferedBooksByExchangeOfferId(int exchangeOfferId)
+        {
+            var user = await _currentUserService.GetUserAsync();
+            var ExchangeOffer = await _exchangeOfferRepository.GetByIdAsync(exchangeOfferId);
+            if (ExchangeOffer == null)
+                return Result<IEnumerable<BookResponse>>.NotFound("Exchange offer not found");
+            if (ExchangeOffer.Status != ExchangeOfferStatus.Pending)
+            {
+                return Result<IEnumerable<BookResponse>>.BadRequest($"This exchange offer is already {ExchangeOffer.Status}");
+            }
+            if (ExchangeOffer.ReceiverId != user.Id && ExchangeOffer.SenderId != user.Id)
+            {
+                return Result<IEnumerable<BookResponse>>.BadRequest("This exchange offer does not belong to the current user");
+            }
+            var books = await _offeredBookRepositoryAsync.GetOfferedBooksWithDetailsByExchangeOfferIdAsync(exchangeOfferId);
+            var result = books.Select(
+                b => new BookResponse
+                {
+                    Id = b.BookId,
+                    Title = b.Book.Title,
+                    Author = b.Book.Author,
+                    ISBN = b.Book.ISBN ?? string.Empty,
+                    Description = b.Book.Description ??
+                    string.Empty,
+                    ImageUrl = b.Book.CoverImageUrl,
+                    IsAvailable = b.Book.IsAvailable,
+                    IsApproved = b.Book.IsApproved,
+                    RejectionReason = b.Book.RejectionReason,
+                    OwnerId = b.Book.OwnerId,
+                    OwnerName = b.Book.Owner.UserName ?? string.Empty,
+                    Condition = b.Book.Condition,
+                    CategoryId = b.Book.CategoryId,
+                    CategoryName = b.Book.Category?.Name ?? string.Empty,
+                    Status = b.Book.Status
+                });
+            return Result<IEnumerable<BookResponse>>.Success(result);
+        }
+
+     
+
     }
 }
