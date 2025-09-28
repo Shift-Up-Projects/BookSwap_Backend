@@ -75,7 +75,7 @@ namespace BookSwap.Api.Controllers
         [Authorize]
         public async Task<ApiResult<IEnumerable<BookResponse>>> GetBooksByOwner(int ownerId)
         {
-            var result = await _bookService.GetBooksByOwner(ownerId);
+            var result = await _bookService.GetBooksByOwnerAsync(ownerId);
             return this.ToApiResult(result);
         }
 
@@ -106,24 +106,7 @@ namespace BookSwap.Api.Controllers
             var result = await _bookService.GetRejectedBooksByOwnerAsync(ownerId);
             return this.ToApiResult(result);
         }
-        [HttpGet("PendingExchange/{ownerId}")]
-        [Authorize]
-        public async Task<ApiResult<IEnumerable<BookResponse>>> GetPendingExchangeBooksByOwnerId(int ownerId )
-        {
-            var result = await _bookService.GetPendingExchangeOfferBooksByOwnerAsync(ownerId);
-            return this.ToApiResult(result);
-        }
-
-
-        [HttpGet("LentBooksByOwnerId/{ownerId}")]
-        [Authorize]
-        public async Task<ApiResult<IEnumerable<BookResponse>>> GeLentBooksByOwnerId(int ownerId)
-        {
-            var result = await _bookService.GetLentBooksByOwnerAsync(ownerId);
-            return this.ToApiResult(result);
-        }
-
-
+     
 
         // Get offered books for a  exchange offer Id (accessible by sender or receiver only)
         [HttpGet("OfferedBooks/{exchangeOfferId}")]
