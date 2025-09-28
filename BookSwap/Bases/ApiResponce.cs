@@ -55,7 +55,11 @@ namespace BookSwap.Api.Bases
         {
             return ErrorResponse((int)HttpStatusCode.InternalServerError, message);
         }
-       
+        public static ApiResponse<T> UnauthorizedResponse(string message = "Invalid user ID")
+        {
+            return ErrorResponse((int)HttpStatusCode.Unauthorized, message);
+        }
+
     }
     public class ApiResponse
     {
@@ -106,6 +110,10 @@ namespace BookSwap.Api.Bases
         public static ApiResponse InternalServerErrorResponse(string message = "Internal Server Error.")
         {
             return ErrorResponse((int)HttpStatusCode.InternalServerError, message);
+        }
+        public static ApiResponse UnauthorizedResponse(string message = "Invalid user ID")
+        {
+            return ErrorResponse((int)HttpStatusCode.Unauthorized, message);
         }
     }
 }

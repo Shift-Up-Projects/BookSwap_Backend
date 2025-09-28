@@ -20,6 +20,10 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using BookSwap.Middleware;
+using BookSwap.Infrastructure.Abstracts;
+using BookSwap.Infrastructure.Repositories;
+using BookSwap.Application.Abstracts;
+using BookSwap.Application.Implementations;
 
 namespace BookSwap.Api
 {
@@ -67,7 +71,11 @@ namespace BookSwap.Api
                     var factory = x.GetRequiredService<IUrlHelperFactory>();
                     return factory.GetUrlHelper(actionContext!);
                 });
-
+                builder.Services.AddScoped<IExchangeOfferRepositoryAsync, ExchangeOfferRepositoryAsync>();
+                builder.Services.AddScoped<IUserRepositoryAsync, UserRepositoryAsync>();
+                builder.Services.AddScoped<IExchangeOfferService, ExchangeOfferService>();
+                builder.Services.AddScoped<IOfferedBookRepositoryAsync, OfferedBookRepositoryAsync>();
+                builder.Services.AddScoped<IBookOwnershipHistoryRepositoryAsync, BookOwnershipHistoryRepositoryAsync>();
                 #region addIdentity
 
                 builder.Services.AddIdentity<User, Role>(option =>
@@ -168,8 +176,27 @@ namespace BookSwap.Api
                 //Auth Filter
                 builder.Services.AddTransient<AuthFilter>();
                 var app = builder.Build();
-                app.UseMiddleware<ErrorHandlerExceptionMiddleware>();
+              
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    var roleManager = services.GetRequiredService<RoleManager<Role>>();
 
+                    string[] roleNames = { "Admin", "User" };
+                    foreach (var roleName in roleNames)
+                    {
+                        var roleExists = await roleManager.RoleExistsAsync(roleName);
+                        if (!roleExists)
+                        {
+                            await roleManager.CreateAsync(new Role
+                            {
+                                Name = roleName,
+                                NormalizedName = roleName.ToUpper()
+                            });
+                        }
+                    }
+                }
+  app.UseMiddleware<ErrorHandlerExceptionMiddleware>();
                 // Configure the HTTP request pipeline.
                 if (app.Environment.IsDevelopment())
                 {

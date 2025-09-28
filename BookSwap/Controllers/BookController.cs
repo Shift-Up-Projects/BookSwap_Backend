@@ -8,6 +8,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BookSwap.Application.Dtos.Book.Request;
+using BookSwap.Application.Dtos.ExchangeOffer.Request;
+using BookSwap.Core.Entities;
 
 namespace BookSwap.Api.Controllers
 {
@@ -73,7 +75,7 @@ namespace BookSwap.Api.Controllers
         [Authorize]
         public async Task<ApiResult<IEnumerable<BookResponse>>> GetBooksByOwner(int ownerId)
         {
-            var result = await _bookService.GetBooksByOwnerAsync(ownerId);
+            var result = await _bookService.GetBooksByOwner(ownerId);
             return this.ToApiResult(result);
         }
 
@@ -102,6 +104,33 @@ namespace BookSwap.Api.Controllers
         public async Task<ApiResult<IEnumerable<BookResponse>>> RejectedBooksByOwnerId(int ownerId)
         {
             var result = await _bookService.GetRejectedBooksByOwnerAsync(ownerId);
+            return this.ToApiResult(result);
+        }
+        [HttpGet("PendingExchange/{ownerId}")]
+        [Authorize]
+        public async Task<ApiResult<IEnumerable<BookResponse>>> GetPendingExchangeBooksByOwnerId(int ownerId )
+        {
+            var result = await _bookService.GetPendingExchangeOfferBooksByOwnerAsync(ownerId);
+            return this.ToApiResult(result);
+        }
+
+
+        [HttpGet("LentBooksByOwnerId/{ownerId}")]
+        [Authorize]
+        public async Task<ApiResult<IEnumerable<BookResponse>>> GeLentBooksByOwnerId(int ownerId)
+        {
+            var result = await _bookService.GetLentBooksByOwnerAsync(ownerId);
+            return this.ToApiResult(result);
+        }
+
+
+
+        // Get offered books for a  exchange offer Id (accessible by sender or receiver only)
+        [HttpGet("OfferedBooks/{exchangeOfferId}")]
+        [Authorize]
+        public async Task<ApiResult<IEnumerable<BookResponse>>>GetOfferedBooksByExchangeOfferId(int exchangeOfferId)
+        {
+            var result = await _bookService.GetOfferedBooksByExchangeOfferId(exchangeOfferId);
             return this.ToApiResult(result);
         }
     }

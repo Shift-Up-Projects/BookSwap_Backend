@@ -57,7 +57,11 @@ namespace BookSwap.Api.Bases
         public static ApiResult<T> InternalServerError(string message = "Internal Server Error.")
         {
             return new ApiResult<T>(ApiResponse<T>.InternalServerErrorResponse(message));
-        }      
+        }
+        public static ApiResult<T> Unauthorized(string message = "Invalid user ID")
+        {
+            return new ApiResult<T>(ApiResponse<T>.UnauthorizedResponse(message));
+        }
     }
     public class ApiResult : IActionResult
     {
@@ -112,6 +116,10 @@ namespace BookSwap.Api.Bases
         public static ApiResult InternalServerError(string message = "Internal Server Error.")
         {
             return new ApiResult(ApiResponse.InternalServerErrorResponse(message));
+        }
+        public static ApiResult Unauthorized(string message = "Invalid user ID")
+        {
+            return new ApiResult(ApiResponse.UnauthorizedResponse(message));
         }
     }
 }
