@@ -70,7 +70,7 @@ namespace BookSwap.Infrastructure.Configuration
                  .HasDefaultValue(string.Empty);
 
             builder.HasOne(x => x.Owner)
-                   .WithMany(u => u.Books)
+                   .WithMany(u => u.OwnedBooks)
                    .HasForeignKey(x => x.OwnerId)
                    .OnDelete(DeleteBehavior.Restrict);
 
