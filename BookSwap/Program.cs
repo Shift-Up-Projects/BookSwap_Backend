@@ -20,6 +20,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using BookSwap.Middleware;
+using BookSwap.Infrastructure.Seeder;
 using BookSwap.Infrastructure.Abstracts;
 using BookSwap.Infrastructure.Repositories;
 using BookSwap.Application.Abstracts;
@@ -189,6 +190,10 @@ namespace BookSwap.Api
                 {
                     var DbContext = Services.GetRequiredService<BookSwapDbContext>();
                     await DbContext.Database.MigrateAsync();
+                    var userManager = Scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                    var roleManager = Scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+                    await RoleSeeder.SeedAsync(roleManager);
+                    await UserSeeder.SeedAsync(userManager);
                 }
                 catch (Exception ex)
                 {
