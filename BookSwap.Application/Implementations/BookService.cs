@@ -89,7 +89,7 @@ namespace BookSwap.Application.Implementations
                 IsAvailable = book.IsAvailable,
                 IsApproved = book.IsApproved,
                 OwnerId = book.OwnerId,
-                OwnerName = user.UserName ?? string.Empty,
+                OwnerName = user.FirstName + " " + user.LastName ?? string.Empty,
                 Condition = book.Condition,
                 CategoryId = book.CategoryId,
                 CategoryName = category.Name,
@@ -151,7 +151,7 @@ namespace BookSwap.Application.Implementations
                 IsAvailable = book.IsAvailable,
                 IsApproved = book.IsApproved,
                 OwnerId = book.OwnerId,
-                OwnerName = user?.UserName ?? string.Empty,
+                OwnerName = user.FirstName + " " + user.LastName ?? string.Empty,
                 Condition = book.Condition,
                 CategoryId = book.CategoryId,
                 CategoryName = book.Category?.Name ?? string.Empty,
@@ -197,7 +197,7 @@ namespace BookSwap.Application.Implementations
                 IsAvailable = book.IsAvailable,
                 IsApproved = book.IsApproved,
                 OwnerId = book.OwnerId,
-                OwnerName = user?.UserName ?? string.Empty,
+                OwnerName = book.Owner.FirstName + " " + book.Owner.LastName ?? string.Empty,
                 Condition = book.Condition,
                 CategoryId = book.CategoryId,
                 CategoryName = book.Category?.Name ?? string.Empty,
@@ -221,7 +221,7 @@ namespace BookSwap.Application.Implementations
                     IsAvailable = b.IsAvailable,
                     IsApproved = b.IsApproved,
                     OwnerId = b.OwnerId,
-                    OwnerName = b.Owner.UserName ?? string.Empty,
+                    OwnerName = b.Owner.FirstName + " " + b.Owner.LastName ?? string.Empty,
                     Condition = b.Condition,
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
@@ -252,7 +252,7 @@ namespace BookSwap.Application.Implementations
                     IsAvailable = b.IsAvailable,
                     IsApproved = b.IsApproved,
                     OwnerId = b.OwnerId,
-                    OwnerName = b.Owner.UserName ?? string.Empty,
+                    OwnerName = b.Owner.FirstName + " " + b.Owner.LastName ?? string.Empty,
                     Condition = b.Condition,
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
@@ -283,7 +283,7 @@ namespace BookSwap.Application.Implementations
                     IsAvailable = b.IsAvailable,
                     IsApproved = b.IsApproved,
                     OwnerId = b.OwnerId,
-                    OwnerName = b.Owner.UserName ?? string.Empty,
+                    OwnerName = b.Owner.FirstName + " " + b.Owner.LastName ?? string.Empty,
                     Condition = b.Condition,
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
@@ -311,7 +311,7 @@ namespace BookSwap.Application.Implementations
                     IsAvailable = b.IsAvailable,
                     IsApproved = b.IsApproved,
                     OwnerId = b.OwnerId,
-                    OwnerName = b.Owner.UserName ?? string.Empty,
+                    OwnerName = b.Owner.FirstName + " " + b.Owner.LastName ?? string.Empty,
                     Condition = b.Condition,
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
@@ -356,7 +356,7 @@ namespace BookSwap.Application.Implementations
                     IsApproved = b.IsApproved,
                     RejectionReason = b.RejectionReason,
                     OwnerId = b.OwnerId,
-                    OwnerName = b.Owner.UserName ?? string.Empty,
+                    OwnerName = b.Owner.FirstName + " " + b.Owner.LastName ?? string.Empty,
                     Condition = b.Condition,
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
@@ -387,7 +387,7 @@ namespace BookSwap.Application.Implementations
                     IsApproved = b.IsApproved,
                     RejectionReason = b.RejectionReason,
                     OwnerId = b.OwnerId,
-                    OwnerName = b.Owner.UserName ?? string.Empty,
+                    OwnerName = b.Owner.FirstName + " " + b.Owner.LastName ?? string.Empty,
                     Condition = b.Condition,
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
@@ -438,7 +438,7 @@ namespace BookSwap.Application.Implementations
                     IsApproved = b.Book.IsApproved,
                     RejectionReason = b.Book.RejectionReason,
                     OwnerId = b.Book.OwnerId,
-                    OwnerName = b.Book.Owner.UserName ?? string.Empty,
+                    OwnerName = b.Book.Owner.FirstName + " "+ b.Book.Owner.LastName ?? string.Empty,
                     Condition = b.Book.Condition,
                     CategoryId = b.Book.CategoryId,
                     CategoryName = b.Book.Category?.Name ?? string.Empty,
@@ -447,7 +447,31 @@ namespace BookSwap.Application.Implementations
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
 
-     
+        public async Task<Result<IEnumerable<BookResponse>>> GetAvailableBooksForExchangeAsync()
+        {
+            var user = await _currentUserService.GetUserAsync();
+            var books = await _bookRepository.GetTableNoTracking()
+                .Where(b => b.OwnerId == user.Id && b.IsApproved && b.IsAvailable)
+                .Include(b=>b.Owner)
+                .ToListAsync();
 
+            var result = books.Select(b => new BookResponse
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                ISBN = b.ISBN ?? string.Empty,
+                Description = b.Description ?? string.Empty,
+                ImageUrl = b.CoverImageUrl,
+                IsAvailable = b.IsAvailable,
+                IsApproved = b.IsApproved,
+                OwnerId = b.OwnerId,
+                OwnerName = b.Owner.FirstName +" "+ b.Owner.LastName ?? string.Empty
+            });
+            if (result.Count()==0)
+                 return Result<IEnumerable<BookResponse>>.NotFound("Not Found Any books available to Exchange");
+            return Result<IEnumerable<BookResponse>>.Success(result, "Available books for exchange retrieved successfully");
+
+        }
     }
 }

@@ -1,10 +1,14 @@
 ﻿using BookSwap.Application.Abstracts;
+using BookSwap.Application.Dtos.Book.Response;
 using BookSwap.Application.Dtos.ExchangeOffer.Request;
 using BookSwap.Application.Dtos.ExchangeOffer.Response;
 using BookSwap.Core.Entities;
 using BookSwap.Core.Enums;
 using BookSwap.Core.Results;
 using BookSwap.Infrastructure.Abstracts;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Tls;
 
 namespace BookSwap.Application.Implementations
 {
@@ -281,10 +285,6 @@ namespace BookSwap.Application.Implementations
 
                 await _bookRepository.UpdateRangeAsync(offeredBooks.Select(e => e.Book).ToList());
 
-
-
-
-
                 await _offeredBookRepository.UpdateRangeAsync(offeredBooks.ToList());
 
                 await _bookRepository.UpdateAsync(RequestedBook);
@@ -427,6 +427,61 @@ namespace BookSwap.Application.Implementations
             }
 
         }
+        public async Task<Result<IEnumerable<ExchangeOfferResponse>>> GetMyOffersSentByStatusAsync(ExchangeOfferStatus status)
+        {
+            var user = await _currentUserService.GetUserAsync();
+            var offers = await _exchangeOfferRepository.GetMyOffersSentByStatusAsync(status, user.Id);
+            var result = offers.Select(e => new ExchangeOfferResponse
+            {
+                Id = e.Id,
+                SenderId = e.SenderId,
+                SenderName = e.Sender.FirstName + e.Sender.LastName ?? "",
+                ReceiverId = e.ReceiverId,
+                ReceiverName = e.Receiver.FirstName + e.Receiver.LastName ?? "",
+                RequestedBookId = e.RequestedBookId,
+                RequestedBookTitle = e.RequestedBook.Title,
+                OfferedBooks = e.OfferedBooks.Select(OfferedBook => new OfferedBookResponse
+                {
+                    BookId = OfferedBook.Book.Id,
+                    Title = OfferedBook.Book.Title,
+                    Author = OfferedBook.Book.Author,
+                    ImageUrl = OfferedBook.Book.CoverImageUrl,
+                    Condition = OfferedBook.Book.Condition,
+                    IsSelected = OfferedBook.IsSelected
+                }).ToList(),
 
+                Status = e.Status,
+                CreatedAt = e.CreatedAt,
+            });
+            return Result<IEnumerable<ExchangeOfferResponse>>.Success(result);
+        }
+        public async Task<Result<IEnumerable<ExchangeOfferResponse>>> GetMyOffersReceivedByStatusAsync(ExchangeOfferStatus status)
+        {
+            var user = await _currentUserService.GetUserAsync();
+            var offers = await _exchangeOfferRepository.GetMyOffersReceivedByStatusAsync(status, user.Id);
+            var result = offers.Select(e => new ExchangeOfferResponse
+            {
+                Id = e.Id,
+                SenderId = e.SenderId,
+                SenderName = e.Sender.FirstName + e.Sender.LastName ?? "",
+                ReceiverId = e.ReceiverId,
+                ReceiverName = e.Receiver.FirstName + e.Receiver.LastName ?? "",
+                RequestedBookId = e.RequestedBookId,
+                RequestedBookTitle = e.RequestedBook.Title,
+                OfferedBooks = e.OfferedBooks.Select(OfferedBook => new OfferedBookResponse
+                {
+                    BookId = OfferedBook.Book.Id,
+                    Title = OfferedBook.Book.Title,
+                    Author = OfferedBook.Book.Author,
+                    ImageUrl = OfferedBook.Book.CoverImageUrl,
+                    Condition = OfferedBook.Book.Condition,
+                    IsSelected = OfferedBook.IsSelected
+                }).ToList(),
+
+                Status = e.Status,
+                CreatedAt = e.CreatedAt,
+            });
+            return Result<IEnumerable<ExchangeOfferResponse>>.Success(result);
+        }
     }
 }

@@ -4,6 +4,7 @@ using BookSwap.Application.Abstracts;
 using BookSwap.Application.Dtos.ExchangeOffer.Request;
 using BookSwap.Application.Dtos.ExchangeOffer.Response;
 using BookSwap.Application.Implementations;
+using BookSwap.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,20 @@ namespace BookSwap.Api.Controllers
         public async Task<ApiResult<bool>> RejectedExchangeOffer([FromBody] CancelExchangeOfferRequest request)
         {
             var result = await _exchangeOfferService.RejectedExchangeOfferRequest(request);
+            return this.ToApiResult(result);
+        }
+        [HttpGet("Sent/{status}")]
+        [Authorize]
+        public async Task<ApiResult<IEnumerable<ExchangeOfferResponse>>> GetMyOffersSentByStatusAsync(ExchangeOfferStatus status)
+        {
+            var result = await _exchangeOfferService.GetMyOffersSentByStatusAsync(status);
+            return this.ToApiResult(result);
+        }
+        [HttpGet("Received/{status}")]
+        [Authorize]
+        public async Task<ApiResult<IEnumerable<ExchangeOfferResponse>>> GetMyOffersReceivedByStatusAsync(ExchangeOfferStatus status)
+        {
+            var result = await _exchangeOfferService.GetMyOffersReceivedByStatusAsync(status);
             return this.ToApiResult(result);
         }
 

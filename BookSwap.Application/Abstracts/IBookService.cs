@@ -19,5 +19,6 @@ namespace BookSwap.Application.Abstracts
         Task<Result<IEnumerable<BookResponse>>> GetRejectedBooksAsync();
         Task<Result<IEnumerable<BookResponse>>> GetRejectedBooksByOwnerAsync(int ownerId);
         Task<Result<IEnumerable<BookResponse>>> GetOfferedBooksByExchangeOfferId(int exchangeOfferId);
+        Task<Result<IEnumerable<BookResponse>>> GetAvailableBooksForExchangeAsync();
     }
 }

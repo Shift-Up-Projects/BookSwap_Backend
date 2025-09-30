@@ -51,12 +51,33 @@ public class ExchangeOfferRepositoryAsync : GenericRepositoryAsync<ExchangeOffer
             .Include(e => e.Receiver)
             .ToListAsync();
     }
-
-    public async Task<IEnumerable<ExchangeOffer>> GetOffersByStatusAsync(ExchangeOfferStatus status)
+    public async Task<IEnumerable<ExchangeOffer>> GetMyOffersByStatusAsync(ExchangeOfferStatus status, int userId)
     {
         return await GetTableNoTracking()
-            .Where(e => e.Status == status)
+            .Where(e => e.Status == status && (e.SenderId == userId || e.ReceiverId == userId))
             .Include(e => e.OfferedBooks)
+            .Include(e => e.RequestedBook)
+            .Include(e => e.Sender)
+            .Include(e => e.Receiver)
+            .ToListAsync();
+    }
+    public async Task<IEnumerable<ExchangeOffer>> GetMyOffersSentByStatusAsync(ExchangeOfferStatus status, int senderId)
+    {
+        return await GetTableNoTracking()
+            .Where(e => e.Status == status && e.SenderId == senderId)
+            .Include(e => e.OfferedBooks)
+            .ThenInclude(ob => ob.Book)
+            .Include(e => e.RequestedBook)
+            .Include(e => e.Sender)
+            .Include(e => e.Receiver)
+            .ToListAsync();
+    }
+    public async Task<IEnumerable<ExchangeOffer>> GetMyOffersReceivedByStatusAsync(ExchangeOfferStatus status, int receiverId)
+    {
+        return await GetTableNoTracking()
+            .Where(e => e.Status == status && e.ReceiverId == receiverId)
+            .Include(e => e.OfferedBooks)
+            .ThenInclude(ob => ob.Book)
             .Include(e => e.RequestedBook)
             .Include(e => e.Sender)
             .Include(e => e.Receiver)

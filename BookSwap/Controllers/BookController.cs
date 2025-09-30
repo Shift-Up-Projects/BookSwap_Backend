@@ -116,5 +116,12 @@ namespace BookSwap.Api.Controllers
             var result = await _bookService.GetOfferedBooksByExchangeOfferId(exchangeOfferId);
             return this.ToApiResult(result);
         }
+        [HttpGet("Available")]
+        [Authorize]
+        public async Task<ApiResult<IEnumerable<BookResponse>>> GetAvailableBooksForExchangeAsync()
+        {
+            var result = await _bookService.GetAvailableBooksForExchangeAsync();
+            return this.ToApiResult(result);
+        }
     }
 }
