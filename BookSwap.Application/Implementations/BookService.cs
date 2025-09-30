@@ -221,6 +221,8 @@ namespace BookSwap.Application.Implementations
                     Status = b.Status,
                     RejectionReason = b.RejectionReason
                 });
+            if(result.Count() == 0)
+                return Result<IEnumerable<BookResponse>>.NotFound("Not Found Approved Books");
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
         public async Task<Result<IEnumerable<BookResponse>>> GetPendingApprovalBooksAsync()
@@ -250,6 +252,8 @@ namespace BookSwap.Application.Implementations
                     Status = b.Status,
                     RejectionReason = b.RejectionReason
                 });
+            if (result.Count() == 0)
+                return Result<IEnumerable<BookResponse>>.NotFound("Not Found Pending Approval Books");
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
         public async Task<Result<IEnumerable<BookResponse>>> GetBooksByOwnerAsync(int ownerId)
@@ -279,6 +283,9 @@ namespace BookSwap.Application.Implementations
                     Status = b.Status,
                     RejectionReason= b.RejectionReason
                 });
+            if (result.Count() == 0)
+                return Result<IEnumerable<BookResponse>>.NotFound("Not Found Books");
+
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
         public async Task<Result<IEnumerable<BookResponse>>> SearchBooksAsync(string? searchTerm)
@@ -304,6 +311,9 @@ namespace BookSwap.Application.Implementations
                     Status = b.Status,
                     RejectionReason = b.RejectionReason
                 });
+            if (result.Count() == 0)
+                return Result<IEnumerable<BookResponse>>.NotFound("Not Found Books");
+
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
         [Authorize("Admin")]
@@ -344,7 +354,11 @@ namespace BookSwap.Application.Implementations
                     CategoryId = b.CategoryId,
                     CategoryName = b.Category?.Name ?? string.Empty,
                     Status = b.Status
+
                 });
+            if (result.Count() == 0)
+                return Result<IEnumerable<BookResponse>>.NotFound("Not Found Rejected Books");
+
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
 
@@ -372,6 +386,10 @@ namespace BookSwap.Application.Implementations
                     CategoryName = b.Category?.Name ?? string.Empty,
                     Status = b.Status
                 });
+
+            if (result.Count() == 0)
+                return Result<IEnumerable<BookResponse>>.NotFound("Not Found Rejected Books");
+
             return Result<IEnumerable<BookResponse>>.Success(result);
         }
         private async Task<bool> RequiresAdminApprovalAsync(Book book, UpdateBookRequest request)
