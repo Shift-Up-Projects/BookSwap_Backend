@@ -14,12 +14,14 @@ namespace BookSwap.Application
     {
         public static IServiceCollection AddServicesDependencies(this IServiceCollection services, IConfiguration configuration)
         {      
-            services.AddTransient<ICurrentUserService, CurrentUserService>();
-            services.AddTransient<IApplicationUserService, ApplicationUserService>();
-            services.AddTransient<IAuthonticationService, AuthonticationService>();
-            services.AddTransient<IMediaService, MediaService>();
-            services.AddTransient<IEmailService, EmailService>();
-            services.AddTransient<IBookService, BookService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IApplicationUserService, ApplicationUserService>();
+            services.AddScoped<IAuthonticationService, AuthonticationService>();
+            services.AddScoped<IMediaService, MediaService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IExchangeOfferService, ExchangeOfferService>();
+
 
             //BackgroundServices
             services.AddHostedService<RefreshTokenCleanupService>();

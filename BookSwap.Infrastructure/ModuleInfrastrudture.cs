@@ -9,12 +9,14 @@ namespace BookSwap.Infrastructure
     {
         public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services)
         {
-            services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
-            services.AddTransient<IRefreshTokenRepositoryAsync, RefreshTokenRepositoryAsync>();
-            services.AddTransient<IBookRepositoryAsync, BookRepositoryAsync>();
-            services.AddTransient<ICategoryRepositoryAsync, CategoryRepositoryAsync>();
-            services.AddTransient<IExchangeOfferRepositoryAsync, ExchangeOfferRepositoryAsync>();
-
+            services.AddScoped(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
+            services.AddScoped<IRefreshTokenRepositoryAsync, RefreshTokenRepositoryAsync>();
+            services.AddScoped<IBookRepositoryAsync, BookRepositoryAsync>();
+            services.AddScoped<ICategoryRepositoryAsync, CategoryRepositoryAsync>();
+            services.AddScoped<IExchangeOfferRepositoryAsync, ExchangeOfferRepositoryAsync>();
+            services.AddScoped<IUserRepositoryAsync, UserRepositoryAsync>();
+            services.AddScoped<IOfferedBookRepositoryAsync, OfferedBookRepositoryAsync>();
+            services.AddScoped<IBookOwnershipHistoryRepositoryAsync, BookOwnershipHistoryRepositoryAsync>();
             return services;
         }
 
