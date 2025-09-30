@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 namespace BookSwap.Application.Abstracts
 {
    public interface IExchangeOfferService
-    {
-      Task<Result<ExchangeOfferResponse>> CreateExchangeOfferAsync(CreateExchangeOfferRequest request,int senderId);
-      Task<Result<AcceptExchangeOfferResponse>> AccepteExchangeOfferRequest(AcceptExchangeOfferRequest request, int reciverId);
-        Task<Result<bool>> CancelExchangeOfferRequest(CancelExchangeOfferRequest request, int senderId);
-        Task<Result<bool>> RejectedExchangeOfferRequest(CancelExchangeOfferRequest request, int reciverId);
-    }
+   {
+      Task<Result<ExchangeOfferResponse>> CreateExchangeOfferAsync(CreateExchangeOfferRequest request);
+      Task<Result<AcceptExchangeOfferResponse>> AccepteExchangeOfferRequest(AcceptExchangeOfferRequest request);
+      Task<Result<bool>> CancelExchangeOfferRequest(CancelExchangeOfferRequest request);
+      Task<Result<bool>> RejectedExchangeOfferRequest(CancelExchangeOfferRequest request);
+   }
 }

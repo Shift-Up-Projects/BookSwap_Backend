@@ -25,32 +25,32 @@ namespace BookSwap.Api.Controllers
 
         [HttpPost("create")]
         [Authorize]
-        public async Task<ApiResult<ExchangeOfferResponse>> AddNewExchangeOffer([FromBody]CreateExchangeOfferRequest request,int senderId)
+        public async Task<ApiResult<ExchangeOfferResponse>> AddNewExchangeOffer([FromBody]CreateExchangeOfferRequest request)
         {
            
-            var result = await _exchangeOfferService.CreateExchangeOfferAsync(request, senderId);
+            var result = await _exchangeOfferService.CreateExchangeOfferAsync(request);
                  
             return this.ToApiResult(result);
         }
-        [HttpPut("accept/{reciverId}")]
+        [HttpPut("accept")]
         [Authorize]
-        public async Task<ApiResult<AcceptExchangeOfferResponse>> AcceptedExchangeOffer([FromBody]AcceptExchangeOfferRequest request,int reciverId)
+        public async Task<ApiResult<AcceptExchangeOfferResponse>> AcceptedExchangeOffer([FromBody]AcceptExchangeOfferRequest request)
         {
-            var result=await _exchangeOfferService.AccepteExchangeOfferRequest(request, reciverId);  
+            var result=await _exchangeOfferService.AccepteExchangeOfferRequest(request);  
             return this.ToApiResult(result);
         }
-        [HttpPut("cancel/{senderId}")]
+        [HttpPut("cancel")]
         [Authorize]
-        public async Task<ApiResult<bool>> CancelledExchangeOffer([FromBody]CancelExchangeOfferRequest request,int senderId)
+        public async Task<ApiResult<bool>> CancelledExchangeOffer([FromBody]CancelExchangeOfferRequest request)
         {
-            var result=await _exchangeOfferService.CancelExchangeOfferRequest(request, senderId);
+            var result=await _exchangeOfferService.CancelExchangeOfferRequest(request);
             return this.ToApiResult(result);
         }
-        [HttpPut("rejected/{reciverId}")]
+        [HttpPut("rejected")]
         [Authorize]
-        public async Task<ApiResult<bool>> RejectedExchangeOffer([FromBody] CancelExchangeOfferRequest request, int reciverId)
+        public async Task<ApiResult<bool>> RejectedExchangeOffer([FromBody] CancelExchangeOfferRequest request)
         {
-            var result = await _exchangeOfferService.RejectedExchangeOfferRequest(request, reciverId);
+            var result = await _exchangeOfferService.RejectedExchangeOfferRequest(request);
             return this.ToApiResult(result);
         }
 
